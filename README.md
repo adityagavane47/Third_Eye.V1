@@ -3,6 +3,9 @@
 Built by Team **Vmax** (Aditya Gavane, Gaurav Jain, Nishad Kulkarni)
 
 \---
+Problem Statement
+
+With the rapid growth of Web3 and digital assets, users and organizations face increasing risks from fraudulent transactions, malicious wallet activity, phishing, and compromised addresses. Existing security tools often analyze transactions individually and provide limited context, making it difficult to detect complex attack patterns early and respond quickly.
 
 ## Overview
 
