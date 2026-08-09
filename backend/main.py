@@ -465,7 +465,9 @@ async def shield_blacklist(body: ShieldRequest):
                 "chainId":  chain_id,
             }
             signed = account.sign_transaction(tx)
-            raw_tx_hex = signed.raw_transaction.hex()
+            # eth-account >=0.11 uses `rawTransaction` (camelCase); older versions use `raw_transaction`
+            raw_bytes = getattr(signed, "rawTransaction", None) or getattr(signed, "raw_transaction", None)
+            raw_tx_hex = raw_bytes.hex()
             if not raw_tx_hex.startswith("0x"):
                 raw_tx_hex = "0x" + raw_tx_hex
             
