@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply transition-colors duration-300;
+}
+
+body {
+  @apply bg-cyber-950 text-cyber-100;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Smooth gradient background */
+.bg-gradient-cyber {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+/* Glow effect utilities */
+.glow-text {
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.glow-border {
+  box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.1), 0 0 20px rgba(0, 217, 255, 0.1);
+}
+
+/* Glassmorphism */
+.glass {
+  @apply bg-cyber-900/40 backdrop-blur-md border border-cyber-700/30;
+}
+
+.glass-hover {
+  @apply glass hover:bg-cyber-900/60 hover:border-cyber-600/50 cursor-pointer;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 255, 0.5);
+}

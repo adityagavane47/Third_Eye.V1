@@ -1,0 +1,96 @@
+# ============================================================
+# Sentinel Galaxy — .gitignore
+# Covers: Python, Node/React, Solidity/Hardhat, Docker, IDE
+# ============================================================
+
+# ── Python ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+.Python
+env/
+venv/
+.venv/
+ENV/
+.env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+celerybeat-schedule
+celerybeat.pid
+
+# ── Node / React / Vite ─────────────────────────────────────
+node_modules/
+dist/
+.next/
+out/
+.nuxt/
+.vuepress/dist
+.cache/
+.parcel-cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp.*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ── Solidity / Hardhat / Foundry ────────────────────────────
+artifacts/
+cache/
+typechain-types/
+coverage/
+coverage.json
+deployments/
+.openzeppelin/
+out/
+broadcast/
+*.abi
+*.bin
+
+# ── Environment & Secrets ───────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+secrets/
+
+# ── IDE & OS ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Docker ──────────────────────────────────────────────────
+*.log
+docker-compose.override.yml

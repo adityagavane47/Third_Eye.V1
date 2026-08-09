@@ -1,0 +1,40 @@
+[workspace]
+members  = ["program", "script", "aggregator"]
+resolver = "2"
+
+[workspace.dependencies]
+serde       = { version = "1", default-features = false, features = ["derive", "alloc"] }
+serde_json  = { version = "1", default-features = false, features = ["alloc"] }
+
+# ── Workspace release profile ─────────────────────────────────────────────────
+# Heavy network/crypto crates (reqwest, ring, rustls) cause SIGBUS (OOM) in WSL
+# when compiled at opt-level=3. Reduce to opt-level=1 to stay within 12GB RAM.
+[profile.release]
+opt-level     = 3
+lto           = false   # Disable LTO to save RAM; reenable for final prod build
+codegen-units = 1
+
+[profile.release.package.reqwest]
+opt-level = 1
+
+[profile.release.package.ring]
+opt-level = 1
+
+[profile.release.package.rustls]
+opt-level = 1
+
+[profile.release.package.webpki-roots]
+opt-level = 1
+
+[profile.release.package.h2]
+opt-level = 1
+
+[profile.release.package.hyper]
+opt-level = 1
+
+[profile.release.package.hyper-util]
+opt-level = 1
+
+[profile.release.package.tokio]
+opt-level = 1
+

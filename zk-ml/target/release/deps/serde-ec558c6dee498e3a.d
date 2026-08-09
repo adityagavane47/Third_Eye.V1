@@ -1,0 +1,14 @@
+D:\NExus\Nexus-Hackathon\zk-ml\target\release\deps\serde-ec558c6dee498e3a.d: C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs D:\NExus\Nexus-Hackathon\zk-ml\target\release\build\serde-c472c4d8c0b94bfd\out/private.rs
+
+D:\NExus\Nexus-Hackathon\zk-ml\target\release\deps\libserde-ec558c6dee498e3a.rlib: C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs D:\NExus\Nexus-Hackathon\zk-ml\target\release\build\serde-c472c4d8c0b94bfd\out/private.rs
+
+D:\NExus\Nexus-Hackathon\zk-ml\target\release\deps\libserde-ec558c6dee498e3a.rmeta: C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs D:\NExus\Nexus-Hackathon\zk-ml\target\release\build\serde-c472c4d8c0b94bfd\out/private.rs
+
+C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs:
+C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs:
+C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs:
+C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs:
+C:\Users\ADITYA\ GAVANE\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs:
+D:\NExus\Nexus-Hackathon\zk-ml\target\release\build\serde-c472c4d8c0b94bfd\out/private.rs:
+
+# env-dep:OUT_DIR=D:\\NExus\\Nexus-Hackathon\\zk-ml\\target\\release\\build\\serde-c472c4d8c0b94bfd\\out

@@ -1,0 +1,5 @@
+src = open('/root/zk-ml/script/src/main.rs.bak').read()
+src = src.replace('ProverClient::from_env()', 'ProverClient::new()')
+src = src.replace('vk.bytes32().len()', '32')
+open('/root/zk-ml/script/src/main.rs', 'w').write(src)
+print('Patched', len(src), 'bytes')

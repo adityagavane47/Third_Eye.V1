@@ -1,0 +1,20 @@
+[package]
+name    = "thirdeye-zkml-program"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "thirdeye-zkml-program"
+path = "src/main.rs"
+
+[dependencies]
+sp1-zkvm = { version = "6.3.1" }
+libm     = { version = "0.2" }
+
+serde      = { workspace = true }
+serde_json = { workspace = true }
+
+[profile.release]
+opt-level = 3
+lto       = true
+codegen-units = 1

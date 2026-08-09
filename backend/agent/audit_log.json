@@ -1,0 +1,2 @@
+{"wallet": "0xABC123", "risk_score": 1.0, "risk_hints": ["High transaction velocity detected", "Part of cyclic fund movement", "Connected to known malicious wallet"], "timestamp": "2026-04-25T16:10:57.452753"}
+{"wallet": "0xABC123", "risk_score": 1.0, "risk_hints": ["High transaction velocity detected", "Part of cyclic fund movement", "Connected to known malicious wallet"], "timestamp": "2026-04-25T16:16:04.752426"}

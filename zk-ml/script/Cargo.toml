@@ -1,0 +1,24 @@
+[package]
+name    = "thirdeye-zkml-script"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "prove"
+path = "src/main.rs"
+
+[dependencies]
+sp1-sdk   = { version = "6.3.1" }
+bincode   = { version = "1" }
+tokio     = { version = "1", features = ["full"] }
+
+serde       = { version = "1", features = ["derive"] }
+serde_json  = { version = "1" }
+
+clap = { version = "4", features = ["derive"] }
+
+tracing             = "0.1"
+tracing-subscriber  = { version = "0.3", features = ["env-filter"] }
+
+[build-dependencies]
+sp1-build = "6.3.1"
