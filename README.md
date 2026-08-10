@@ -174,6 +174,32 @@ third_eye/
 
 ---
 
+## 🔴 Live On-Chain Proof — Guardian Shield Transaction
+
+The following transaction was broadcast **live on Base Sepolia** by Third Eye's autonomous backend after detecting a high-risk wallet at **88.0% risk score**.
+
+| Field | Value |
+|---|---|
+| **Network** | Base Sepolia (Testnet) |
+| **Status** | ✅ Success — Confirmed by Sequencer |
+| **Block** | [45277823](https://sepolia.basescan.org/block/45277823) |
+| **Timestamp** | Aug-10-2026 01:05:34 AM UTC |
+| **Tx Hash** | [`0x2e623e6ab...573611f`](https://sepolia.basescan.org/tx/0x2e623e6ab41925d142ce7c469846c2b1e96391b825d4cc7fde746116a573611f) |
+| **From** | `0xeDfa9415D1c9614631FBbC1Fba490dDF2411e1Db` (Operator) |
+| **To** | `0xd9145CCE52D386f254917e481eB44e9943F39138` (Guardian Contract) |
+| **Value** | 0 ETH |
+| **Gas Used** | 25,300 / 200,000 (12.65%) |
+| **Input Data** | `Sentinel manual shield defi_user at 88.0% risk` |
+
+> The `Input Data` field contains the human-readable reason encoded into the blacklist call — proving Third Eye's AI agent correctly identified and tagged the threat before submitting the on-chain transaction.
+
+![BaseScan Guardian Shield Transaction](docs/basescan_shield_tx.png)
+
+**View on BaseScan →** https://sepolia.basescan.org/tx/0x2e623e6ab41925d142ce7c469846c2b1e96391b825d4cc7fde746116a573611f
+
+---
+
+
 ## Local Development Setup
 
 ### Prerequisites
