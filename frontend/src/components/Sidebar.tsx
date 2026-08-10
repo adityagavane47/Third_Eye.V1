@@ -30,6 +30,7 @@ interface SidebarProps {
   onClose: () => void;
   isExploitDetected?: boolean;
   reportData?: ForensicReport | null;
+  onExploreNetwork?: () => void;
 }
 
 // ── Color helpers ───────────────────────────────────────────────
@@ -172,6 +173,7 @@ export default function Sidebar({
   onClose,
   isExploitDetected = false,
   reportData,
+  onExploreNetwork,
 }: SidebarProps) {
   const [report, setReport] = useState<ForensicReport | null>(reportData ?? null);
   const [loading, setLoading] = useState(false);
@@ -387,7 +389,39 @@ export default function Sidebar({
                 )}
               </AnimatePresence>
 
-              {/* ── ITEM 3.5: Threat Activity Graph ── */}
+              {/* ── ITEM 3.5: Explore Network Button ── */}
+              {onExploreNetwork && (
+                <motion.div variants={itemVariants} style={{ marginBottom: 14 }}>
+                  <motion.button
+                    onClick={onExploreNetwork}
+                    whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(124,58,237,0.25)" }}
+                    whileTap={{ scale: 0.97 }}
+                    style={{
+                      width: "100%",
+                      background: "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(79,70,229,0.08))",
+                      border: "1px solid rgba(124,58,237,0.45)",
+                      borderRadius: 10,
+                      color: "#A78BFA",
+                      cursor: "pointer",
+                      padding: "12px 16px",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      fontFamily: "'Inter', sans-serif",
+                      letterSpacing: "0.05em",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <span style={{ fontSize: 16 }}>🗺</span>
+                    Explore Wallet Network
+                    <span style={{ fontSize: 10, color: "rgba(167,139,250,0.6)", marginLeft: 4 }}>1-2 HOP</span>
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* ── ITEM 3.6: Threat Activity Graph ── */}
               <motion.div variants={itemVariants} style={{ marginBottom: 16 }}>
                 <ThreatActivityGraph height={160} onExpand={() => setExpandedGraph(true)} />
               </motion.div>

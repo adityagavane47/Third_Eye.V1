@@ -2,10 +2,65 @@
  * Dashboard.tsx — Main Layout
  */
 
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, Suspense, lazy } from "react";
 import Galaxy3D, { type GalaxyNode, type GraphData } from "../components/Galaxy3D";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../context/AuthContext";
+
+// Lazy-load WalletExplorer so canvas/ForceGraph errors don't crash the root bundle
+const WalletExplorer = lazy(() => import("../components/WalletExplorer"));
+
+// ── Error Boundary — catches ForceGraph2D / canvas runtime crashes ────────
+class ExplorerErrorBoundary extends React.Component<
+  { onDismiss: () => void; children: React.ReactNode },
+  { hasError: boolean; errorMsg: string }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, errorMsg: "" };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMsg: error?.message ?? "Unknown render error" };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error("[WalletExplorer] Render error:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 300,
+          background: "rgba(0,0,4,0.85)", backdropFilter: "blur(16px)",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center", gap: 20,
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          <div style={{ fontSize: 36 }}>⚠️</div>
+          <div style={{ color: "#FF3B3B", fontWeight: 700, fontSize: 16, letterSpacing: "0.06em" }}>
+            EXPLORER RENDER ERROR
+          </div>
+          <div style={{ color: "#64748B", fontSize: 12, fontFamily: "'JetBrains Mono', monospace", maxWidth: 400, textAlign: "center" }}>
+            {this.state.errorMsg}
+          </div>
+          <button
+            onClick={() => { this.setState({ hasError: false, errorMsg: "" }); this.props.onDismiss(); }}
+            style={{
+              background: "rgba(255,59,59,0.12)", border: "1px solid #FF3B3B",
+              borderRadius: 8, color: "#FF3B3B", cursor: "pointer",
+              padding: "10px 24px", fontSize: 13, fontWeight: 700,
+            }}
+          >
+            ✕ Close Explorer
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Relative paths handled by Vite proxy
 const API_BASE = "";
@@ -25,6 +80,7 @@ export default function Dashboard() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [simulating, setSimulating] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" | "info" } | null>(null);
+  const [explorerOpen, setExplorerOpen] = useState(false);
 
   const showToast = (msg: string, type: "success" | "error" | "info" = "info") => {
     setToast({ msg, type });
@@ -38,12 +94,14 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Graph fetch failed");
       const data = await res.json();
       setGraphData(data);
-      setAlertMode(data.nodes?.some((n: GalaxyNode) => n.flagged) ?? false);
+      // Only trigger red alert if a genuinely high-risk flagged node exists
+      const isRealThreat = (n: GalaxyNode) => n.flagged && (n.riskScore ?? 0) > 0.85;
+      setAlertMode(data.nodes?.some(isRealThreat) ?? false);
       setLastRefresh(new Date());
     } catch {
 
       setGraphData(MOCK_GRAPH_DATA);
-      setAlertMode(MOCK_GRAPH_DATA.nodes.some((n) => n.flagged));
+      setAlertMode(MOCK_GRAPH_DATA.nodes.some((n) => n.flagged && (n.riskScore ?? 0) > 0.85));
     } finally {
       setLoading(false);
     }
@@ -257,7 +315,24 @@ export default function Dashboard() {
           selectedNode={selectedNode}
           onClose={handleSidebarClose}
           isExploitDetected={alertMode}
+          onExploreNetwork={selectedNode ? () => setExplorerOpen(true) : undefined}
         />
+
+        {/* Wallet Relationship Explorer Modal — isolated in error boundary */}
+        <ExplorerErrorBoundary onDismiss={() => setExplorerOpen(false)}>
+          <Suspense fallback={null}>
+            <WalletExplorer
+              isOpen={explorerOpen}
+              originNode={selectedNode}
+              fallbackGraph={graphData}
+              onClose={() => setExplorerOpen(false)}
+              onNodeSelect={(node) => {
+                setSelectedNode(node);
+                setExplorerOpen(false);
+              }}
+            />
+          </Suspense>
+        </ExplorerErrorBoundary>
       </div>
 
       {/* CSS Animations */}

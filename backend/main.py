@@ -39,7 +39,11 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Neo4j connection verified")
         # Clean up previous demo exploits only if connected
         async with app.state.neo4j.session() as session:
+            # Delete demo attacker wallets from previous sessions
             await session.run("MATCH (w:Wallet {injected: true}) DETACH DELETE w")
+            # Reset any flagged state left over from previous demo runs
+            await session.run("MATCH (w:Wallet) WHERE w.flagged = true SET w.flagged = false")
+            logger.info("🧹 Demo state reset: injected wallets removed, flagged states cleared")
     except Exception as e:
         logger.warning(f"⚠️  Neo4j unavailable at startup (will retry on first request): {e}")
 
@@ -239,6 +243,179 @@ async def flag_wallet(body: FlagWalletRequest, request: Request = None):
         "risk_score":  row["risk_score"],
         "status":      "updated",
     }
+
+
+@app.get("/api/graph/neighbors/{wallet_address}", tags=["Graph"])
+async def get_wallet_neighbors(wallet_address: str, hops: int = 2, limit: int = 150, request: Request = None):
+    """
+    Fetch 1-2 hop neighbor sub-graph for a given wallet address.
+    Returns nodes and directed edges for the Wallet Relationship Explorer.
+    Falls back to manual BFS Cypher if APOC is not installed.
+    """
+    driver = request.app.state.neo4j
+
+    async def _bfs_query(session) -> dict:
+        """Pure-Cypher 1-2 hop BFS — works on any Neo4j install."""
+        nodes_result = await session.run(
+            """
+            MATCH (origin:Wallet {address: $addr})
+            OPTIONAL MATCH (origin)-[:SENT_TO*1..2]-(neighbor:Wallet)
+            WITH origin, collect(DISTINCT neighbor) AS neighbors
+            WITH [origin] + [n IN neighbors WHERE n IS NOT NULL] AS all_nodes
+            UNWIND all_nodes AS n
+            RETURN DISTINCT
+                n.address     AS address,
+                n.label       AS label,
+                n.risk_score  AS riskScore,
+                n.flagged     AS flagged,
+                n.tx_count    AS txCount,
+                n.balance_eth AS balanceEth
+            LIMIT $limit
+            """,
+            addr=wallet_address,
+            limit=limit,
+        )
+        nodes_data = await nodes_result.data()
+
+        all_addresses = [r["address"] for r in nodes_data if r["address"]]
+
+        links_data = []
+        if all_addresses:
+            links_result = await session.run(
+                """
+                UNWIND $addresses AS src
+                MATCH (s:Wallet {address: src})-[r:SENT_TO]->(t:Wallet)
+                WHERE t.address IN $addresses
+                RETURN
+                    s.address              AS source,
+                    t.address              AS target,
+                    r.tx_hash              AS txHash,
+                    coalesce(r.value_eth, 0.0) AS valueEth
+                """,
+                addresses=all_addresses,
+            )
+            links_data = await links_result.data()
+
+        nodes_out = []
+        for row in nodes_data:
+            addr = row["address"]
+            if not addr:
+                continue
+            nodes_out.append({
+                "id":         addr,
+                "address":    addr,
+                "label":      row["label"]      or "unknown",
+                "riskScore":  float(row["riskScore"]  or 0.0),
+                "flagged":    bool(row["flagged"]      or False),
+                "txCount":    int(row["txCount"]       or 0),
+                "balanceEth": float(row["balanceEth"]  or 0.0),
+                "hopDepth":   0 if addr == wallet_address else 1,
+                "isOrigin":   addr == wallet_address,
+            })
+
+        links_out = [
+            {
+                "source":   lnk["source"],
+                "target":   lnk["target"],
+                "txHash":   lnk["txHash"]  or "",
+                "valueEth": float(lnk["valueEth"] or 0.0),
+            }
+            for lnk in links_data
+            if lnk["source"] and lnk["target"]
+        ]
+
+        total_volume  = sum(lnk["valueEth"] for lnk in links_out)
+        flagged_count = sum(1 for n in nodes_out if n["flagged"] and not n["isOrigin"])
+
+        return {
+            "origin": wallet_address,
+            "nodes":  nodes_out,
+            "links":  links_out,
+            "stats": {
+                "totalNodes":       len(nodes_out),
+                "totalEdges":       len(links_out),
+                "totalVolumeEth":   round(total_volume, 4),
+                "flaggedNeighbors": flagged_count,
+                "directNeighbors":  sum(1 for n in nodes_out if n.get("hopDepth") == 1),
+            },
+        }
+
+    async with driver.session() as session:
+        # ── Try APOC first (faster for large graphs) ────────────────────────
+        try:
+            result = await session.run(
+                """
+                MATCH (origin:Wallet {address: $addr})
+                CALL apoc.path.subgraphAll(origin, {
+                    relationshipFilter: 'SENT_TO',
+                    maxLevel: $hops,
+                    limit: $limit
+                })
+                YIELD nodes, relationships
+                RETURN nodes, relationships
+                """,
+                addr=wallet_address,
+                hops=min(hops, 2),
+                limit=limit,
+            )
+            apoc_row = await result.single()
+
+            if apoc_row:
+                raw_nodes = apoc_row["nodes"]
+                raw_rels  = apoc_row["relationships"]
+
+                nodes_out = []
+                for n in raw_nodes:
+                    props = dict(n)
+                    addr = props.get("address", "")
+                    if not addr:
+                        continue
+                    nodes_out.append({
+                        "id":         addr,
+                        "address":    addr,
+                        "label":      props.get("label")       or "unknown",
+                        "riskScore":  float(props.get("risk_score")  or 0.0),
+                        "flagged":    bool(props.get("flagged")       or False),
+                        "txCount":    int(props.get("tx_count")       or 0),
+                        "balanceEth": float(props.get("balance_eth")  or 0.0),
+                        "hopDepth":   0 if addr == wallet_address else 1,
+                        "isOrigin":   addr == wallet_address,
+                    })
+
+                links_out = []
+                for r in raw_rels:
+                    props = dict(r)
+                    links_out.append({
+                        "source":   r.start_node["address"],
+                        "target":   r.end_node["address"],
+                        "txHash":   props.get("tx_hash")    or "",
+                        "valueEth": float(props.get("value_eth") or 0.0),
+                    })
+
+                total_volume  = sum(lnk["valueEth"] for lnk in links_out)
+                flagged_count = sum(1 for n in nodes_out if n["flagged"] and not n["isOrigin"])
+
+                return {
+                    "origin": wallet_address,
+                    "nodes":  nodes_out,
+                    "links":  links_out,
+                    "stats": {
+                        "totalNodes":       len(nodes_out),
+                        "totalEdges":       len(links_out),
+                        "totalVolumeEth":   round(total_volume, 4),
+                        "flaggedNeighbors": flagged_count,
+                        "directNeighbors":  sum(1 for n in nodes_out if n.get("hopDepth") == 1),
+                    },
+                }
+
+            # APOC returned no rows — fall through to BFS
+        except Exception:
+            # APOC not installed or another procedure error — use plain Cypher BFS
+            logger.info("APOC unavailable for /neighbors — falling back to BFS Cypher")
+
+        # ── Manual BFS fallback (no APOC required) ───────────────────────────
+        return await _bfs_query(session)
+
 
 
 @app.get("/api/forensic/report/{wallet_address}", tags=["AI Forensics"])
